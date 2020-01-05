@@ -9,6 +9,7 @@ export interface ITokenPayload {
     id: string
 }
 export const generateToken = (user: IUserDocument): string => {
+    console.log("generateToken", user.id)
     const data: ITokenPayload = {
         role: user.role,
         email: user.email,
@@ -42,8 +43,8 @@ export const isAuthenticated = async (req: Request, res: Response, next: NextFun
     try {
         const tokenpayload: string | any = jwt.verify(token, SIGNATURE)
         if (typeof tokenpayload === "string") throw new Error("Unauthorized")
-        const user = await UserModel.findOne({ _id: tokenpayload.id }).exec()
-        // console.log(user, tokenpayload)
+        const user = await UserModel.findOne({ _id: tokenpayload.id }).lean().exec()
+        console.log(user, tokenpayload)
         if (!user) throw new Error("Unauthorized")
         if (user.role !== tokenpayload.role) throw new Error("Unauthorized: TOKEN IS NO LONGER VALID")
         res.locals.tokenpayload = tokenpayload

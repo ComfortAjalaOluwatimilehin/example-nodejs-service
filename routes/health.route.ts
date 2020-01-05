@@ -5,5 +5,5 @@ export let HealthRoute = (req: Request, res: Response) => {
     res.set({
         "Content-Type": "text/html;charset=utf-8"
     })
-    return res.status(200).send(`<h1>The Server is healthy<h1> <br> The current FULL ENV is = ${process.env.FULL_ENVIRONMENT}`)
+    return res.status(200).send(`<h1>The Server is healthy<h1> <br> The current FULL ENV is = ${process.env.NODE_ENV}`)
 }

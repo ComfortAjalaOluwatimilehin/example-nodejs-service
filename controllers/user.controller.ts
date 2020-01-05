@@ -47,7 +47,8 @@ export const patchuser = async (req: Request, res: Response) => {
     try {
         const tokenpayload: ITokenPayload = res.locals.tokenpayload
         await UserModel.updateOne({ _id: tokenpayload.id }, { ...req.body })
-        return res.status(200).send("updated")
+        const user = await UserModel.findOne({ _id: tokenpayload.id }).lean().exec()
+        return res.status(200).json({ ...user })
     } catch (err) {
         return res.status(403).send(err.message)
     }
@@ -59,10 +60,10 @@ const validatepassword = async function (hashedpassword: string, password: strin
 export const login = async (req: Request, res: Response) => {
     try {
         const { email, password } = req.body
-        const user = await UserModel.findOne({ email })
+        const user = await UserModel.findOne({ email }).exec()
         if (!user || user === null) throw new Error("Invalid User")
         const isSimilar: boolean = await validatepassword(user.password, password)
-        // console.log(user, isSimilar, password)
+        console.log(user)
         if (isSimilar === false) throw new Error("Invalid User")
         const token = generateToken(user)
         return res.status(200).send(printtoken(token))
